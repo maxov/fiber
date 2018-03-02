@@ -4,10 +4,9 @@ object Fiber extends Base with Lexing with Parsing with Trees {
 
   def main(args: Array[String]): Unit = {
     val in = ReplSource(0)
-    println(lex(
-      """(hello)
-        |(how are (you) 3 "yoo")
-      """.stripMargin, in))
+    println(parse(lex(
+      """(defn x [y z] (+ y z))
+        |(defn a [] 3)""".stripMargin, in), in))
   }
 
 }

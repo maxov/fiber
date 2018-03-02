@@ -9,17 +9,16 @@ trait Lexing { this: Base =>
   sealed trait Token {
     def pos: Pos
   }
-  case class EOF(pos: Pos) extends Token
   case class Id(id: String, pos: Pos) extends Token
-  case class Integral(i: Int, pos: Pos) extends Token
-  case class Str(s: String, pos: Pos) extends Token
+  case class IntT(i: Int, pos: Pos) extends Token
+  case class StrT(s: String, pos: Pos) extends Token
   case class Punct(c: Char, pos: Pos) extends Token
 
   val LineRegex: Regex = raw"^\n".r
   val WhitespaceRegex: Regex = raw"^[\r\t\f\v ]+".r
   val PunctRegex: Regex = raw"^[()'\[\]]".r
   val IntRegex: Regex = raw"^\d+".r
-  val IdRegex: Regex = raw"^\w+".r
+  val IdRegex: Regex = "^[^\\s()\\[\\]'\"]+".r
   val StrRegex: Regex = "^\"([^\"\\\\]|\\\\.)*\"".r
 
   val allRegex = List(LineRegex, WhitespaceRegex, PunctRegex, IntRegex, StrRegex, IdRegex)
@@ -64,11 +63,11 @@ trait Lexing { this: Base =>
         case Some((IntRegex, m, rest)) if Try { m.toInt }.isSuccess =>
           in = rest
           curChar += m.length
-          tok += Integral(m.toInt, pos)
+          tok += IntT(m.toInt, pos)
         case Some((StrRegex, m, rest)) =>
           in = rest
           curChar += m.length
-          tok += Str(m, pos)
+          tok += StrT(m, pos)
         case Some((IdRegex, m, rest)) =>
           in = rest
           curChar += m.length
